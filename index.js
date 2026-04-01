@@ -84,11 +84,3 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Bot activo en puerto ${PORT}`);
 });
-// Ruta de prueba
-app.get('/', (req, res) => {
-  res.send('Bot de WhatsApp activo y funcionando 🚀');
-});
-
-app.listen(PORT, () => {
-  console.log(`Bot activo en puerto ${PORT}`);
-});
