@@ -40,7 +40,7 @@ app.post('/webhook', async (req, res) => {
     console.log('API Key existe:', !!apiKey);
     console.log('API Key primeros chars:', apiKey ? apiKey.substring(0, 10) : 'NINGUNA');
 
-    const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey;
+    const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-exp-03-25:generateContent?key=' + apiKey;
 
     const bodyEnviar = {
       system_instruction: {
