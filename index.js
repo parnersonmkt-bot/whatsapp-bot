@@ -22,8 +22,8 @@ app.post('/webhook', async (req, res) => {
 
   try {
     const geminiUrl =
-  'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' +
-  process.env.GEMINI_API_KEY;
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' +
+      process.env.GEMINI_API_KEY;
 
     const geminiResponse = await fetch(geminiUrl, {
       method: 'POST',
@@ -33,9 +33,10 @@ app.post('/webhook', async (req, res) => {
       body: JSON.stringify({
         contents: [
           {
-            role: "user",
             parts: [
-              { text: SYSTEM_PROMPT + "\n\nUsuario: " + mensajeEntrante }
+              {
+                text: SYSTEM_PROMPT + "\n\nUsuario: " + mensajeEntrante
+              }
             ]
           }
         ]
@@ -75,6 +76,14 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
+// Ruta de prueba
+app.get('/', (req, res) => {
+  res.send('Bot de WhatsApp activo y funcionando 🚀');
+});
+
+app.listen(PORT, () => {
+  console.log(`Bot activo en puerto ${PORT}`);
+});
 // Ruta de prueba
 app.get('/', (req, res) => {
   res.send('Bot de WhatsApp activo y funcionando 🚀');
