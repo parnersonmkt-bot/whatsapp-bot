@@ -6,7 +6,6 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 10000;
 
-// Prompt del bot (podés mejorarlo después)
 const SYSTEM_PROMPT = `
 Sos un asistente de ventas profesional.
 Respondé claro, breve y amigable.
@@ -21,38 +20,31 @@ app.post('/webhook', async (req, res) => {
   console.log('Texto:', mensajeEntrante);
 
   try {
-    const geminiUrl =
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' +
-      process.env.GEMINI_API_KEY;
-
-    const geminiResponse = await fetch(geminiUrl, {
+    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + process.env.OPENAI_API_KEY
       },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: SYSTEM_PROMPT + "\n\nUsuario: " + mensajeEntrante
-              }
-            ]
-          }
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: mensajeEntrante }
         ]
       })
     });
 
-    if (!geminiResponse.ok) {
-      const errorText = await geminiResponse.text();
-      console.error('Error Gemini:', errorText);
-      throw new Error('Fallo en Gemini');
+    if (!openaiResponse.ok) {
+      const errorText = await openaiResponse.text();
+      console.error('Error OpenAI:', errorText);
+      throw new Error('Fallo en OpenAI');
     }
 
-    const data = await geminiResponse.json();
+    const data = await openaiResponse.json();
 
     const respuesta =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
+      data.choices?.[0]?.message?.content ||
       "No pude responder en este momento.";
 
     console.log('Respuesta:', respuesta);
