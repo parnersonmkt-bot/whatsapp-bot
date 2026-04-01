@@ -65,15 +65,21 @@ app.post('/webhook', async (req, res) => {
     const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + process.env.GEMINI_API_KEY;
 
     const geminiResponse = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: {
-          parts: [{ text: SYSTEM_PROMPT }]
-        },
-        contents: conversaciones[numeroCliente]
-      })
-    });
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: SYSTEM_PROMPT + "\n\nUsuario: " + mensajeEntrante }
+        ]
+      }
+    ]
+  })
+});
 
     if (!geminiResponse.ok) {
       const errorText = await geminiResponse.text();
