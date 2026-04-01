@@ -6,11 +6,11 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 10000;
 
-// Prompt base del bot (podés editarlo para ventas)
+// Prompt del bot (podés mejorarlo después)
 const SYSTEM_PROMPT = `
 Sos un asistente de ventas profesional.
-Respondé de forma clara, breve y amigable.
-Tu objetivo es ayudar al cliente y llevar la conversación hacia una venta.
+Respondé claro, breve y amigable.
+Tu objetivo es ayudar al cliente y llevarlo a una compra.
 `;
 
 app.post('/webhook', async (req, res) => {
@@ -22,7 +22,7 @@ app.post('/webhook', async (req, res) => {
 
   try {
     const geminiUrl =
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' +
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=' +
       process.env.GEMINI_API_KEY;
 
     const geminiResponse = await fetch(geminiUrl, {
@@ -52,7 +52,7 @@ app.post('/webhook', async (req, res) => {
 
     const respuesta =
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Lo siento, no pude responder en este momento.";
+      "No pude responder en este momento.";
 
     console.log('Respuesta:', respuesta);
 
