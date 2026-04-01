@@ -1,4 +1,5 @@
 const express = require('express');
+const fetch = require('node-fetch');
 
 const app = express();
 app.use(express.json());
@@ -74,8 +75,16 @@ app.post('/webhook', async (req, res) => {
       })
     });
 
+    if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text();
+      console.error('Error Gemini:', errorText);
+    }
+
     const geminiData = await geminiResponse.json();
-    const textoRespuesta = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || 'Disculpa, no pude procesar tu consulta. Intenta de nuevo.';
+
+    const textoRespuesta =
+      geminiData.candidates?.[0]?.content?.parts?.[0]?.text ||
+      'Disculpa, no pude procesar tu consulta. Intenta de nuevo.';
 
     conversaciones[numeroCliente].push({
       role: 'model',
@@ -105,13 +114,22 @@ app.post('/webhook', async (req, res) => {
       }).catch(e => console.error('Airtable error:', e));
     }
 
-    const twiml = '<?xml version="1.0" encoding="UTF-8"?><Response><Message>' + textoRespuesta + '</Message></Response>';
+    const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Message>${textoRespuesta}</Message>
+</Response>`;
+
     res.set('Content-Type', 'text/xml');
     res.send(twiml);
 
   } catch (error) {
     console.error('Error:', error);
-    const twiml = '<?xml version="1.0" encoding="UTF-8"?><Response><Message>Disculpa, tuve un problema tecnico. Intenta de nuevo en un momento.</Message></Response>';
+
+    const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Message>Disculpa, tuve un problema técnico. Intenta de nuevo en un momento.</Message>
+</Response>`;
+
     res.set('Content-Type', 'text/xml');
     res.send(twiml);
   }
